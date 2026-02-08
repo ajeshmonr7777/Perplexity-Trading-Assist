@@ -1,0 +1,1181 @@
+:root {
+    --bg-dark: #0f172a;
+    --bg-darker: #020617;
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --accent-primary: #3b82f6;
+    /* Blue */
+    --accent-secondary: #8b5cf6;
+    /* Purple */
+    --success: #10b981;
+    --danger: #ef4444;
+    --glass-bg: rgba(30, 41, 59, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --card-radius: 16px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Outfit', sans-serif;
+    background: linear-gradient(135deg, var(--bg-darker), var(--bg-dark), #1e1b4b);
+    color: var(--text-primary);
+    height: 100vh;
+    overflow: hidden;
+}
+
+.app-container {
+    display: flex;
+    height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 250px;
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(10px);
+    border-right: 1px solid var(--glass-border);
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 3rem;
+    background: linear-gradient(to right, var(--accent-primary), var(--accent-secondary));
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.nav-links {
+    list-style: none;
+}
+
+.nav-links li {
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+    border-radius: 12px;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.nav-links li:hover,
+.nav-links li.active {
+    background: rgba(59, 130, 246, 0.1);
+    color: var(--accent-primary);
+}
+
+/* Main Content */
+.main-content {
+    flex: 1;
+    padding: 2rem;
+    overflow-y: auto;
+}
+
+.view {
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+.view.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+h1 {
+    font-size: 2rem;
+    font-weight: 600;
+}
+
+/* Glassmorphism Cards */
+.glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--card-radius);
+    padding: 1.5rem;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+}
+
+.summary-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.summary-cards h3 {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.summary-cards .value {
+    font-size: 1.8rem;
+    font-weight: 600;
+}
+
+.value.positive {
+    color: var(--success);
+}
+
+.value.negative {
+    color: var(--danger);
+}
+
+/* Grid Layout */
+.content-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1.5rem;
+    height: calc(100vh - 250px);
+    /* Fill remaining height */
+}
+
+/* Table */
+.table-container {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+th {
+    text-align: left;
+    padding: 1rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+td {
+    padding: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.action-btn {
+    background: none;
+    border: none;
+    color: var(--danger);
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+/* Right Panel */
+.right-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.input-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 1rem;
+}
+
+input {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--glass-border);
+    padding: 0.8rem;
+    border-radius: 8px;
+    color: white;
+    width: 100%;
+    font-family: inherit;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 10px;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.btn-primary:active {
+    transform: scale(0.98);
+}
+
+.btn-small {
+    background: var(--accent-primary);
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+}
+
+.watchlist-items {
+    list-style: none;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.watchlist-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.8rem;
+    background: rgba(255, 255, 255, 0.03);
+    margin-bottom: 0.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.watchlist-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Chart */
+.chart-card {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+#chart-container {
+    flex: 1;
+    min-height: 200px;
+}
+
+.chart-controls span {
+    font-size: 0.8rem;
+    padding: 4px 8px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    cursor: pointer;
+    margin-left: 5px;
+}
+
+.chart-controls span:hover {
+    background: var(--accent-primary);
+}
+
+/* Chat Interface */
+.chat-interface {
+    height: calc(100vh - 150px);
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-history {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.message {
+    max-width: 80%;
+    padding: 1rem;
+    border-radius: 12px;
+    line-height: 1.5;
+}
+
+.message.system {
+    background: rgba(255, 255, 255, 0.1);
+    align-self: flex-start;
+}
+
+.message.user {
+    background: var(--accent-primary);
+    align-self: flex-end;
+}
+
+.chat-input-area {
+    padding: 1rem;
+    border-top: 1px solid var(--glass-border);
+    display: flex;
+    gap: 10px;
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    width: 400px;
+    position: relative;
+}
+
+.close {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 2rem;
+    cursor: pointer;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--text-secondary);
+}
+
+.full-width {
+    width: 100%;
+    margin-top: 1rem;
+}
+
+/* Loading Animation */
+/* Loading Animation */
+.loading-indicator {
+    padding: 1rem 1.5rem;
+    width: fit-content;
+}
+
+.loading-content {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.typing-dots {
+    display: flex;
+    gap: 6px;
+}
+
+.loading-timer {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    font-family: monospace;
+}
+
+.typing-dot {
+    width: 6px;
+    height: 6px;
+    background: var(--text-secondary);
+    border-radius: 50%;
+    animation: typing 1.4s infinite ease-in-out both;
+}
+
+.typing-dot:nth-child(1) {
+    animation-delay: -0.32s;
+}
+
+.typing-dot:nth-child(2) {
+    animation-delay: -0.16s;
+}
+
+@keyframes typing {
+
+    0%,
+    80%,
+    100% {
+        transform: scale(0);
+    }
+
+    40% {
+        transform: scale(1);
+    }
+}
+
+/* Markdown Styles within Chat */
+.message.system ul,
+.message.system ol {
+    margin-left: 1.5rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.message.system p {
+    margin-bottom: 0.5rem;
+}
+
+.message.system strong {
+    color: var(--accent-primary);
+    font-weight: 600;
+}
+
+.message.system h1,
+.message.system h2,
+.message.system h3 {
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+    font-size: 1.1em;
+    color: var(--text-primary);
+}
+
+/* ============================================================================
+   3-AGENT INTERFACE STYLES - CARD LAYOUT
+   ============================================================================ */
+
+/* Agents Subtitle */
+.agents-subtitle {
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    margin-bottom: 3rem;
+}
+
+/* Agent Cards Grid */
+.agents-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+/* Agent Card */
+.agent-card {
+    padding: 2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.agent-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.agent-card:hover::before {
+    transform: scaleX(1);
+}
+
+.agent-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 40px rgba(59, 130, 246, 0.3);
+}
+
+/* Agent Card Icon */
+.agent-card-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+}
+
+.agent-card-icon.screener {
+    background: linear-gradient(135deg, #10b981, #059669);
+    box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+}
+
+.agent-card-icon.assistant {
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    box-shadow: 0 8px 20px rgba(139, 92, 246, 0.4);
+}
+
+.agent-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 0.8rem;
+}
+
+.agent-card p {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+    min-height: 48px;
+}
+
+/* Agent Card Features */
+.agent-card-features {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.agent-card-features span {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.agent-card-features i {
+    color: var(--success);
+    font-size: 0.8rem;
+}
+
+/* Agent Card Status */
+.agent-card-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    padding: 0.5rem 0;
+}
+
+.status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.status-dot.running {
+    background: var(--success);
+    box-shadow: 0 0 10px var(--success);
+    animation: pulse 2s infinite;
+}
+
+.status-dot.stopped {
+    background: var(--danger);
+}
+
+.status-dot.ready {
+    background: var(--success);
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* Agent Card Button */
+.agent-card-btn {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--glass-border);
+    padding: 1rem;
+    border-radius: 12px;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.agent-card:hover .agent-card-btn {
+    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    border-color: transparent;
+}
+
+/* ============================================================================
+   AGENT MODALS
+   ============================================================================ */
+
+.agent-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.3s ease;
+}
+
+.agent-modal.active {
+    display: flex;
+}
+
+.agent-modal-content {
+    width: 90%;
+    max-width: 900px;
+    max-height: 85vh;
+    overflow-y: auto;
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Agent Modal Header */
+.agent-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.agent-modal-header h2 {
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.agent-modal-header p {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+}
+
+.modal-close-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--glass-border);
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-close-btn:hover {
+    background: var(--danger);
+    border-color: var(--danger);
+}
+
+/* Agent Modal Body */
+.agent-modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* Scheduler Controls (in modal) */
+.scheduler-controls {
+    margin-bottom: 0;
+}
+
+/* Analysis Results (in modal) */
+.analysis-results {
+    min-height: 300px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.analysis-results h3 {
+    margin-bottom: 1rem;
+    color: var(--text-secondary);
+}
+
+.analysis-content {
+    padding: 1rem;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem;
+    color: var(--text-secondary);
+}
+
+.empty-state i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+/* Stock Screener (in modal) */
+.screener-input {
+    margin-bottom: 0;
+}
+
+.screener-results {
+    min-height: 300px;
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+/* Chat Interface (in modal) */
+.chat-interface {
+    height: 500px;
+}
+
+/* Scrollbar Styling */
+.agent-modal-content::-webkit-scrollbar,
+.analysis-results::-webkit-scrollbar,
+.screener-results::-webkit-scrollbar {
+    width: 8px;
+}
+
+.agent-modal-content::-webkit-scrollbar-track,
+.analysis-results::-webkit-scrollbar-track,
+.screener-results::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+}
+
+.agent-modal-content::-webkit-scrollbar-thumb,
+.analysis-results::-webkit-scrollbar-thumb,
+.screener-results::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+}
+
+.agent-modal-content::-webkit-scrollbar-thumb:hover,
+.analysis-results::-webkit-scrollbar-thumb:hover,
+.screener-results::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* ============================================================================
+   EXISTING AGENT STYLES (for modal content)
+   ============================================================================ */
+
+/* Scheduler Controls */
+.control-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.control-group {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.control-group label {
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.control-group select {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--glass-border);
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    color: white;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.scheduler-info {
+    display: flex;
+    gap: 2rem;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    flex-wrap: wrap;
+}
+
+.status-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.status-badge.running {
+    background: rgba(16, 185, 129, 0.2);
+    color: var(--success);
+}
+
+.status-badge.stopped {
+    background: rgba(239, 68, 68, 0.2);
+    color: var(--danger);
+}
+
+/* Stock Analysis Card */
+.stock-analysis-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.stock-analysis-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.stock-symbol {
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+.action-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.action-badge.buy {
+    background: rgba(16, 185, 129, 0.2);
+    color: var(--success);
+}
+
+.action-badge.hold {
+    background: rgba(251, 191, 36, 0.2);
+    color: #fbbf24;
+}
+
+.action-badge.sell {
+    background: rgba(239, 68, 68, 0.2);
+    color: var(--danger);
+}
+
+.confidence-bar {
+    margin: 1rem 0;
+}
+
+.confidence-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.confidence-progress {
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.confidence-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+    transition: width 0.5s ease;
+}
+
+.reasoning-text {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-top: 1rem;
+}
+
+/* Stock Screener Results */
+.input-row {
+    display: flex;
+    gap: 1rem;
+}
+
+.input-row input {
+    flex: 1;
+}
+
+.screener-result-card {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--card-radius);
+    padding: 2rem;
+}
+
+.result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+}
+
+.result-symbol {
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.result-price {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+}
+
+.recommendation-box {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.recommendation-label {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.recommendation-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.confidence-box {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.confidence-percentage {
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.reasoning-box {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 1.5rem;
+}
+
+.reasoning-box h4 {
+    margin-bottom: 1rem;
+    color: var(--text-secondary);
+}
+
+.technical-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.technical-item {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 1rem;
+    border-radius: 8px;
+}
+
+.technical-label {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.3rem;
+}
+
+.technical-value {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+/* ============================================================================
+   PER-SYMBOL ANALYSIS STYLES
+   ============================================================================ */
+
+/* Holdings Header */
+.holdings-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+/* Clickable Symbol */
+.symbol-link {
+    color: var(--accent-primary);
+    cursor: pointer;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.symbol-link:hover {
+    color: var(--accent-secondary);
+    text-decoration: underline;
+}
+
+/* AI Decision Badge */
+.decision-badge {
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.decision-badge.BUY {
+    background: rgba(16, 185, 129, 0.2);
+    color: var(--success);
+    border: 1px solid var(--success);
+}
+
+.decision-badge.HOLD {
+    background: rgba(251, 191, 36, 0.2);
+    color: #fbbf24;
+    border: 1px solid #fbbf24;
+}
+
+.decision-badge.SELL {
+    background: rgba(239, 68, 68, 0.2);
+    color: var(--danger);
+    border: 1px solid var(--danger);
+}
+
+.decision-badge.pending {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-secondary);
+    border: 1px solid var(--glass-border);
+}
+
+.decision-badge:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Analysis History Timeline */
+.analysis-history-timeline {
+    padding: 1rem;
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.history-item {
+    background: rgba(255, 255, 255, 0.05);
+    border-left: 4px solid var(--accent-primary);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+
+.history-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateX(5px);
+}
+
+.history-item.BUY {
+    border-left-color: var(--success);
+}
+
+.history-item.SELL {
+    border-left-color: var(--danger);
+}
+
+.history-item.HOLD {
+    border-left-color: #fbbf24;
+}
+
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.history-decision {
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+
+.history-confidence {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+}
+
+.history-time {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+}
+
+.history-price {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+}
+
+.history-reasoning {
+    line-height: 1.6;
+    color: var(--text-primary);
+    white-space: pre-wrap;
+}
+
+/* Loading State for Analysis */
+.analyzing {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.analyzing::after {
+    content: ' (Analyzing...)';
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}

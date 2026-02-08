@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perplexity Trading Dashboard</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- TradingView Lightweight Charts -->
+    <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+    <script src="/static/marked.min.js"></script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/style.css?v=3">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="logo">
+                <i class="fa-solid fa-chart-line"></i> <span>PerplexTrade</span>
+            </div>
+            <ul class="nav-links">
+                <li class="active" onclick="switchTab('dashboard')"><i class="fa-solid fa-layer-group"></i> Dashboard
+                </li>
+                <li onclick="switchTab('analysis')"><i class="fa-solid fa-brain"></i> AI Research</li>
+                <li onclick="switchTab('settings')"><i class="fa-solid fa-gear"></i> Settings</li>
+            </ul>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+
+            <!-- Dashboard View -->
+            <div id="dashboard-view" class="view active">
+                <div class="header">
+                    <h1>Portfolio Overview</h1>
+                    <button class="btn-primary" onclick="openAddAssetModal()"><i class="fa-solid fa-plus"></i> Add
+                        Asset</button>
+                </div>
+
+                <!-- Portfolio Summary Cards -->
+                <div class="summary-cards">
+                    <div class="card glass">
+                        <h3>Total Value</h3>
+                        <div class="value" id="total-value">$0.00</div>
+                    </div>
+                    <div class="card glass">
+                        <h3>Today's P/L</h3>
+                        <div class="value positive" id="total-pnl">+$0.00 (0.00%)</div>
+                    </div>
+                    <div class="card glass">
+                        <h3>Top Performer</h3>
+                        <div class="value" id="top-performer">-</div>
+                    </div>
+                </div>
+
+                <div class="content-grid two-column">
+                    <!-- Portfolio Table -->
+                    <div class="card glass full-height">
+                        <div class="holdings-header">
+                            <h2>Holdings</h2>
+                            <button class="btn-small" onclick="analyzeAllHoldings()">
+                                <i class="fa-solid fa-robot"></i> Analyze All
+                            </button>
+                        </div>
+                        <div class="table-container">
+                            <table id="holdings-table">
+                                <thead>
+                                    <tr>
+                                        <th>Symbol</th>
+                                        <th>Qty</th>
+                                        <th>Avg Price</th>
+                                        <th>Current</th>
+                                        <th>Value</th>
+                                        <th>P/L</th>
+                                        <th>AI Decision</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Dynamic Content -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Watchlist & Mini Chart -->
+                    <div class="right-panel">
+                        <div class="card glass">
+                            <h2>Watchlist</h2>
+                            <div class="input-group">
+                                <input type="text" id="watchlist-input" placeholder="Symbol (e.g. NVDA)">
+                                <button class="btn-small" onclick="addToWatchlist()">Add</button>
+                            </div>
+                            <ul id="watchlist-list" class="watchlist-items">
+                                <!-- Dynamic Content -->
+                            </ul>
+                        </div>
+
+                        <div class="card glass chart-card">
+                            <div class="chart-header">
+                                <h2 id="chart-symbol">SPY</h2>
+                                <div class="chart-controls">
+                                    <span onclick="loadChart('1mo')">1M</span>
+                                    <span onclick="loadChart('3mo')">3M</span>
+                                    <span onclick="loadChart('1y')">1Y</span>
+                                </div>
+                            </div>
+                            <div id="chart-container"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analysis View - 3 AI Agents (Card Layout) -->
+            <div id="analysis-view" class="view">
+                <div class="header">
+                    <h1>AI Agents</h1>
+                    <span class="badge">Powered by Perplexity</span>
+                </div>
+
+                <p class="agents-subtitle">Choose an AI agent to help with your trading decisions</p>
+
+                <!-- Agent Cards Grid -->
+                <div class="agents-grid">
+                    <!-- Agent 1: Portfolio Analyzer -->
+                    <div class="agent-card glass" onclick="openAgentModal('portfolio-analyzer')">
+                        <div class="agent-card-icon">
+                            <i class="fa-solid fa-robot"></i>
+                        </div>
+                        <h3>Portfolio Analyzer</h3>
+                        <p>Auto-analyze your holdings and get BUY/HOLD/SELL recommendations</p>
+                        <div class="agent-card-features">
+                            <span><i class="fa-solid fa-check"></i> Automated Analysis</span>
+                            <span><i class="fa-solid fa-check"></i> Scheduled Runs</span>
+                            <span><i class="fa-solid fa-check"></i> Risk Assessment</span>
+                        </div>
+                        <div class="agent-card-status">
+                            <span id="scheduler-status-mini" class="status-dot stopped"></span>
+                            <span>Stopped</span>
+                        </div>
+                        <button class="agent-card-btn">
+                            <i class="fa-solid fa-arrow-right"></i> Launch Agent
+                        </button>
+                    </div>
+
+                    <!-- Agent 2: Stock Screener -->
+                    <div class="agent-card glass" onclick="openAgentModal('stock-screener')">
+                        <div class="agent-card-icon screener">
+                            <i class="fa-solid fa-magnifying-glass-chart"></i>
+                        </div>
+                        <h3>Stock Screener</h3>
+                        <p>Get instant AI-powered analysis for any stock symbol</p>
+                        <div class="agent-card-features">
+                            <span><i class="fa-solid fa-check"></i> Instant Analysis</span>
+                            <span><i class="fa-solid fa-check"></i> Confidence Score</span>
+                            <span><i class="fa-solid fa-check"></i> Technical Data</span>
+                        </div>
+                        <div class="agent-card-status">
+                            <span class="status-dot ready"></span>
+                            <span>Ready</span>
+                        </div>
+                        <button class="agent-card-btn">
+                            <i class="fa-solid fa-arrow-right"></i> Launch Agent
+                        </button>
+                    </div>
+
+                    <!-- Agent 3: Query Assistant -->
+                    <div class="agent-card glass" onclick="openAgentModal('query-assistant')">
+                        <div class="agent-card-icon assistant">
+                            <i class="fa-solid fa-comments"></i>
+                        </div>
+                        <h3>Query Assistant</h3>
+                        <p>Ask any market questions and get context-aware answers</p>
+                        <div class="agent-card-features">
+                            <span><i class="fa-solid fa-check"></i> Natural Language</span>
+                            <span><i class="fa-solid fa-check"></i> Auto Symbol Detection</span>
+                            <span><i class="fa-solid fa-check"></i> Portfolio Context</span>
+                        </div>
+                        <div class="agent-card-status">
+                            <span class="status-dot ready"></span>
+                            <span>Ready</span>
+                        </div>
+                        <button class="agent-card-btn">
+                            <i class="fa-solid fa-arrow-right"></i> Launch Agent
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <div id="add-asset-modal" class="modal">
+        <div class="modal-content glass">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Add to Portfolio</h2>
+            <div class="form-group">
+                <label>Symbol</label>
+                <input type="text" id="asset-symbol" placeholder="AAPL">
+            </div>
+            <div class="form-group">
+                <label>Quantity</label>
+                <input type="number" id="asset-qty" placeholder="10">
+            </div>
+            <div class="form-group">
+                <label>Average Price</label>
+                <input type="number" id="asset-price" placeholder="150.00">
+            </div>
+            <button class="btn-primary full-width" onclick="addAsset()">Add Asset</button>
+        </div>
+    </div>
+
+    <!-- Agent Modals -->
+    <!-- Portfolio Analyzer Modal -->
+    <div id="portfolio-analyzer-modal" class="agent-modal">
+        <div class="agent-modal-content glass">
+            <div class="agent-modal-header">
+                <div>
+                    <h2><i class="fa-solid fa-robot"></i> Portfolio Analyzer</h2>
+                    <p>Automated portfolio analysis with BUY/HOLD/SELL recommendations</p>
+                </div>
+                <button class="modal-close-btn" onclick="closeAgentModal()">
+                    <i class="fa-solid fa-times"></i>
+                </button>
+            </div>
+
+            <div class="agent-modal-body">
+                <div class="scheduler-controls glass">
+                    <div class="control-row">
+                        <div class="control-group">
+                            <label>Analysis Interval:</label>
+                            <select id="scheduler-interval" onchange="updateSchedulerInterval()">
+                                <option value="15">15 minutes</option>
+                                <option value="30">30 minutes</option>
+                                <option value="60" selected>1 hour</option>
+                                <option value="240">4 hours</option>
+                                <option value="1440">24 hours (daily)</option>
+                            </select>
+                        </div>
+                        <div class="control-group">
+                            <button class="btn-primary" id="scheduler-toggle" onclick="toggleScheduler()">
+                                <i class="fa-solid fa-play"></i> Start Auto-Analysis
+                            </button>
+                            <button class="btn-secondary" onclick="runAnalysisNow()">
+                                <i class="fa-solid fa-bolt"></i> Run Now
+                            </button>
+                        </div>
+                    </div>
+                    <div class="scheduler-info">
+                        <span id="last-run-time">Last Run: Never</span>
+                        <span id="next-run-time">Next Run: -</span>
+                    </div>
+                </div>
+
+                <div class="analysis-results glass">
+                    <h3>Latest Analysis</h3>
+                    <div id="portfolio-analysis-content" class="analysis-content">
+                        <div class="empty-state">
+                            <i class="fa-solid fa-chart-line"></i>
+                            <p>No analysis yet. Click "Run Now" or start the scheduler.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stock Screener Modal -->
+    <div id="stock-screener-modal" class="agent-modal">
+        <div class="agent-modal-content glass">
+            <div class="agent-modal-header">
+                <div>
+                    <h2><i class="fa-solid fa-magnifying-glass-chart"></i> Stock Screener</h2>
+                    <p>Get instant AI-powered analysis for any stock</p>
+                </div>
+                <button class="modal-close-btn" onclick="closeAgentModal()">
+                    <i class="fa-solid fa-times"></i>
+                </button>
+            </div>
+
+            <div class="agent-modal-body">
+                <div class="screener-input glass">
+                    <div class="input-row">
+                        <input type="text" id="screener-symbol" placeholder="Enter symbol (e.g., AAPL)"
+                            onkeypress="handleScreenerEnter(event)">
+                        <button class="btn-primary" onclick="screenStock()">
+                            <i class="fa-solid fa-search"></i> Analyze
+                        </button>
+                    </div>
+                </div>
+
+                <div id="screener-results" class="screener-results">
+                    <div class="empty-state">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <p>Enter a stock symbol above to get started</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Query Assistant Modal -->
+    <div id="query-assistant-modal" class="agent-modal">
+        <div class="agent-modal-content glass">
+            <div class="agent-modal-header">
+                <div>
+                    <h2><i class="fa-solid fa-comments"></i> Query Assistant</h2>
+                    <p>Ask any market-related questions</p>
+                </div>
+                <button class="modal-close-btn" onclick="closeAgentModal()">
+                    <i class="fa-solid fa-times"></i>
+                </button>
+            </div>
+
+            <div class="agent-modal-body">
+                <div class="chat-interface glass">
+                    <div class="chat-history" id="chat-history">
+                        <div class="message system">
+                            Hello! I can help you with market analysis, trading strategies, and stock research.
+                            Try asking: "What's the current market regime?" or "Should I buy AAPL?"
+                        </div>
+                    </div>
+                    <div class="chat-input-area">
+                        <input type="text" id="ai-prompt" placeholder="Ask anything about the markets..."
+                            onkeypress="handleEnter(event)">
+                        <button class="btn-primary" onclick="sendQueryAssistant()"><i
+                                class="fa-solid fa-paper-plane"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analysis History Modal -->
+    <div id="analysis-history-modal" class="agent-modal">
+        <div class="agent-modal-content glass">
+            <div class="agent-modal-header">
+                <div>
+                    <h2><i class="fa-solid fa-clock-rotate-left"></i> <span id="history-symbol">AAPL</span> Analysis
+                        History</h2>
+                    <p>AI decisions over time</p>
+                </div>
+                <button class="modal-close-btn" onclick="closeAnalysisHistory()">
+                    <i class="fa-solid fa-times"></i>
+                </button>
+            </div>
+
+            <div class="agent-modal-body">
+                <div id="analysis-history-content" class="analysis-history-timeline">
+                    <!-- Dynamic content loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/script.js?v=3"></script>
+</body>
+
+</html>
