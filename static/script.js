@@ -2,11 +2,17 @@
 let chart, candleSeries;
 let currentSymbol = 'SPY';
 
-document.addEventListener('DOMContentLoaded', () => {
-    initChart();
-    fetchPortfolio();
-    fetchWatchlist();
-    loadChart(currentSymbol);
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        initChart();
+        await Promise.all([
+            fetchPortfolio(),
+            fetchWatchlist()
+        ]);
+        loadChart(currentSymbol);
+    } catch (error) {
+        console.error('Initialization error:', error);
+    }
 });
 
 // --- Navigation ---
@@ -43,7 +49,8 @@ function initChart() {
         },
     });
 
-    candleSeries = chart.addCandlestickSeries({
+    // Use the v5 API - addSeries instead of the deprecated addCandlestickSeries
+    candleSeries = chart.addSeries(LightweightCharts.CandlestickSeries, {
         upColor: '#10b981',
         downColor: '#ef4444',
         borderVisible: false,
@@ -78,6 +85,74 @@ async function loadChart(symbolOrPeriod) {
     }
 }
 
+// --- Notification System ---
+function showNotification(title, message, type = 'info', onClick = null) {
+    const container = document.getElementById('notification-container');
+
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+
+    // Choose icon based on type
+    let icon = 'fa-info-circle';
+    if (type === 'success') icon = 'fa-check-circle';
+    if (type === 'error') icon = 'fa-exclamation-circle';
+
+    notification.innerHTML = `
+        <div class="notification-icon">
+            <i class="fa-solid ${icon}"></i>
+        </div>
+        <div class="notification-content">
+            <div class="notification-title">${title}</div>
+            <div class="notification-message">${message}</div>
+        </div>
+        <button class="notification-close">
+            <i class="fa-solid fa-times"></i>
+        </button>
+    `;
+
+    // Add to container
+    container.appendChild(notification);
+
+    // Handle click on notification
+    const handleNotificationClick = (e) => {
+        // Don't trigger if clicking the close button
+        if (e.target.closest('.notification-close')) {
+            removeNotification(notification);
+            return;
+        }
+
+        // Execute callback if provided
+        if (onClick) {
+            onClick();
+        }
+
+        // Remove notification
+        removeNotification(notification);
+    };
+
+    // Click handler for entire notification
+    notification.addEventListener('click', handleNotificationClick);
+
+    // Auto-remove after 10 seconds for non-confirmation notifications
+    if (!onClick) {
+        setTimeout(() => {
+            if (notification.parentElement) {
+                removeNotification(notification);
+            }
+        }, 10000);
+    }
+}
+
+function removeNotification(notification) {
+    notification.classList.add('hiding');
+    setTimeout(() => {
+        if (notification.parentElement) {
+            notification.remove();
+        }
+    }, 300); // Animation duration
+}
+
 // --- Portfolio ---
 async function fetchPortfolio() {
     const response = await fetch('/api/portfolio');
@@ -87,15 +162,24 @@ async function fetchPortfolio() {
     let latestAnalyses = {};
     try {
         const analysisResponse = await fetch('/api/analysis/portfolio/latest');
-        const analyses = await analysisResponse.json();
-        analyses.forEach(a => {
-            latestAnalyses[a.symbol] = a;
-        });
+        if (analysisResponse.ok) {
+            const analyses = await analysisResponse.json();
+            analyses.forEach(a => {
+                latestAnalyses[a.symbol] = a;
+            });
+        } else {
+            console.warn('Could not fetch analyses:', analysisResponse.status);
+        }
     } catch (error) {
         console.error('Error fetching analyses:', error);
+        // Continue anyway - portfolio can render without analysis data
     }
 
     const tbody = document.querySelector('#holdings-table tbody');
+    if (!tbody) {
+        console.error('Portfolio table tbody not found in DOM');
+        return;
+    }
     tbody.innerHTML = '';
 
     let totalValue = 0;
@@ -123,17 +207,25 @@ async function fetchPortfolio() {
         const row = `
             <tr>
                 <td>
-                    <span class="symbol-link" onclick="viewSymbolHistory('${item.symbol}')" title="Click to view analysis history">
+                    <span class="symbol-link" onclick="window.location.href='/static/analysis.html?symbol=${item.symbol}&mode=holding'" title="Click to view full analysis">
                         ${item.symbol}
                     </span>
                 </td>
+                <td style="color: ${item.side === 'SELL' ? '#ef4444' : '#10b981'}; font-weight: 600;">${item.side || 'BUY'}</td>
                 <td>${item.quantity}</td>
                 <td>$${item.avg_price.toFixed(2)}</td>
                 <td>$${item.current_price.toFixed(2)}</td>
                 <td>$${value.toFixed(2)}</td>
                 <td style="color: ${pnlColor}">${pnl > 0 ? '+' : ''}${pnl.toFixed(2)}</td>
                 <td>${decisionBadge}</td>
-                <td><button class="action-btn" onclick="deleteAsset(${item.id})"><i class="fa-solid fa-trash"></i></button></td>
+                <td>
+                    <button class="action-btn view-details" onclick="window.location.href='/static/analysis.html?symbol=${item.symbol}&mode=holding'" title="View full analysis">
+                        <i class="fa-solid fa-chart-line"></i>
+                    </button>
+                    <button class="action-btn" onclick="deleteAsset(${item.id})" title="Delete holding">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </td>
             </tr>
         `;
         tbody.innerHTML += row;
@@ -152,6 +244,7 @@ async function fetchPortfolio() {
 
 async function addAsset() {
     const symbol = document.getElementById('asset-symbol').value;
+    const side = document.getElementById('asset-side').value;
     const qty = parseFloat(document.getElementById('asset-qty').value);
     const price = parseFloat(document.getElementById('asset-price').value);
 
@@ -160,7 +253,7 @@ async function addAsset() {
     await fetch('/api/portfolio', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ symbol, quantity: qty, avg_price: price })
+        body: JSON.stringify({ symbol, quantity: qty, avg_price: price, side })
     });
 
     closeModal();
@@ -168,9 +261,20 @@ async function addAsset() {
 }
 
 async function deleteAsset(id) {
-    if (!confirm('Are you sure?')) return;
-    await fetch(`/api/portfolio/${id}`, { method: 'DELETE' });
-    fetchPortfolio();
+    if (!confirm('Are you sure you want to delete this holding?')) return;
+
+    try {
+        const response = await fetch(`/api/portfolio/${id}`, { method: 'DELETE' });
+        if (response.ok) {
+            fetchPortfolio();
+            showNotification('Success', 'Holding deleted successfully!', 'success');
+        } else {
+            showNotification('Error', 'Failed to delete holding.', 'error');
+        }
+    } catch (error) {
+        console.error('Error deleting asset:', error);
+        showNotification('Error', 'Network error while deleting.', 'error');
+    }
 }
 
 // --- Watchlist ---
@@ -717,6 +821,233 @@ async function viewSymbolHistory(symbol) {
 // Close analysis history modal
 function closeAnalysisHistory() {
     const modal = document.getElementById('analysis-history-modal');
+    modal.classList.remove('active');
+}
+
+// ============================================================================
+// DETAILED ANALYSIS VIEW
+// ============================================================================
+
+async function viewDetailedAnalysis(symbol) {
+    const modal = document.getElementById('detailed-analysis-modal');
+    const modalBody = document.getElementById('detailed-modal-body');
+    modal.classList.add('active');
+
+    // Update symbol in header
+    document.getElementById('detailed-symbol').textContent = symbol;
+
+    // Show loading state
+    modalBody.innerHTML = `
+        <div class="empty-state">
+            <i class="fa-solid fa-spinner fa-spin" style="font-size: 2rem; color: var(--accent-primary);"></i>
+            <p>Loading detailed analysis...</p>
+        </div>
+    `;
+
+    try {
+        const response = await fetch(`/api/analysis/symbol/${symbol}/detailed`);
+        const data = await response.json();
+
+        if (data.error) {
+            modalBody.innerHTML = `
+                <div class="empty-state">
+                    <i class="fa-solid fa-circle-exclamation" style="color: var(--error-color);"></i>
+                    <p>${data.error}</p>
+                    <p>Run analysis for this symbol first.</p>
+                </div>
+            `;
+            return;
+        }
+
+        // Populate modal with detailed analysis
+        populateDetailedAnalysis(data);
+
+    } catch (error) {
+        console.error('Error loading detailed analysis:', error);
+        modalBody.innerHTML = `
+            <div class="empty-state">
+                <i class="fa-solid fa-circle-exclamation" style="color: var(--error-color);"></i>
+                <p>Failed to load analysis</p>
+            </div>
+        `;
+    }
+}
+
+function populateDetailedAnalysis(data) {
+    const modalBody = document.getElementById('detailed-modal-body');
+
+    // Update timestamp in header
+    const timestamp = new Date(data.analyzed_at).toLocaleString();
+    document.getElementById('detailed-timestamp').textContent = `Analyzed: ${timestamp}`;
+
+    // Parse AI response to extract structured sections
+    const parsed = parseAIResponseSections(data.raw_response || data.reasoning);
+
+    // Build the detailed view HTML
+    modalBody.innerHTML = `
+        <!-- AI Decision Section -->
+        <div class="analysis-section glass">
+            <h3><i class="fa-solid fa-brain"></i> AI Decision</h3>
+            <div class="decision-display">
+                <div class="decision-badge-large ${data.decision.toLowerCase()}">${data.decision}</div>
+                <div class="confidence-display">
+                    <span class="confidence-label">Confidence:</span>
+                    <div class="confidence-bar">
+                        <div class="confidence-fill" style="width: ${data.confidence}%"></div>
+                    </div>
+                    <span class="confidence-value">${data.confidence}%</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Market Sentiment Section -->
+        ${parsed.sentiment ? `
+        <div class="analysis-section glass">
+            <h3><i class="fa-solid fa-newspaper"></i> Market Sentiment & News</h3>
+            <div class="section-content">${formatMarkdown(parsed.sentiment)}</div>
+        </div>
+        ` : ''}
+
+        <!-- Upcoming Catalysts Section -->
+        ${parsed.catalysts ? `
+        <div class="analysis-section glass">
+            <h3><i class="fa-solid fa-calendar-days"></i> Upcoming Catalysts</h3>
+            <div class="section-content">${formatMarkdown(parsed.catalysts)}</div>
+        </div>
+        ` : ''}
+
+        <!-- Technical Outlook Section -->
+        ${parsed.technical ? `
+        <div class="analysis-section glass">
+            <h3><i class="fa-solid fa-chart-line"></i> Technical Outlook</h3>
+            <div class="section-content">${formatMarkdown(parsed.technical)}</div>
+        </div>
+        ` : ''}
+
+        <!-- AI Reasoning Section -->
+        <div class="analysis-section glass">
+            <h3><i class="fa-solid fa-lightbulb"></i> AI Reasoning</h3>
+            <div class="section-content reasoning-text">${formatMarkdown(data.reasoning)}</div>
+        </div>
+
+        <!-- Price Targets Section -->
+        ${parsed.targets ? `
+        <div class="analysis-section glass">
+            <h3><i class="fa-solid fa-bullseye"></i> Price Targets</h3>
+            <div class="section-content">${formatMarkdown(parsed.targets)}</div>
+            <div class="price-info" style="margin-top: 1rem; padding: 0.75rem; background: rgba(0,0,0,0.2); border-radius: 8px;">
+                <strong>Current Price:</strong> $${data.current_price ? data.current_price.toFixed(2) : 'N/A'}
+            </div>
+        </div>
+        ` : ''}
+
+        <!-- Prompt Section (Collapsible) -->
+        <div class="analysis-section glass">
+            <h3 class="collapsible-header" onclick="toggleSection('prompt-section')">
+                <span><i class="fa-solid fa-code"></i> Prompt Sent to AI</span>
+                <i class="fa-solid fa-chevron-down toggle-icon" id="prompt-toggle"></i>
+            </h3>
+            <div id="prompt-section" class="collapsible-content" style="display: none;">
+                <div class="prompt-header">
+                    <span class="model-badge">Model: ${data.model_used || 'sonar-pro'}</span>
+                    <span class="model-badge">Temperature: ${data.temperature || '0.2'}</span>
+                    <button class="btn-small" onclick="copyToClipboard('prompt-text')">
+                        <i class="fa-solid fa-copy"></i> Copy
+                    </button>
+                </div>
+                <pre id="prompt-text" class="code-block">${escapeHtml(data.full_prompt || 'Prompt not available')}</pre>
+            </div>
+        </div>
+
+        <!-- Raw Response Section (Collapsible) -->
+        <div class="analysis-section glass">
+            <h3 class="collapsible-header" onclick="toggleSection('response-section')">
+                <span><i class="fa-solid fa-file-code"></i> Raw AI Response</span>
+                <i class="fa-solid fa-chevron-down toggle-icon" id="response-toggle"></i>
+            </h3>
+            <div id="response-section" class="collapsible-content" style="display: none;">
+                <pre id="response-text" class="code-block">${escapeHtml(data.raw_response || 'Response not available')}</pre>
+            </div>
+        </div>
+    `;
+}
+
+function parseAIResponseSections(response) {
+    if (!response) return {};
+
+    const sections = {};
+
+    // Extract Market Sentiment
+    const sentimentMatch = response.match(/\*\*Market Sentiment\*\*:?\s*([\s\S]*?)(?=\n\*\*|$)/i);
+    if (sentimentMatch) sections.sentiment = sentimentMatch[1].trim();
+
+    // Extract Key Headlines
+    const headlinesMatch = response.match(/\*\*Key Headlines\*\*[\s\S]*?(?=\n\*\*|$)/i);
+    if (headlinesMatch) sections.headlines = headlinesMatch[0];
+
+    // Extract Upcoming Catalysts
+    const catalystsMatch = response.match(/\*\*Upcoming Catalysts\*\*[\s\S]*?(?=\n\*\*|$)/i);
+    if (catalystsMatch) sections.catalysts = catalystsMatch[0];
+
+    // Extract Technical Outlook
+    const technicalMatch = response.match(/\*\*Technical Outlook\*\*[\s\S]*?(?=\n\*\*|$)/i);
+    if (technicalMatch) sections.technical = technicalMatch[0];
+
+    // Extract Target Price and Stop Loss
+    const targetsMatch = response.match(/\*\*Target Price\*\*[\s\S]*?(?:\*\*Stop Loss\*\*[\s\S]*?)?(?=\n\*\*[A-Z]|$)/i);
+    if (targetsMatch) sections.targets = targetsMatch[0];
+
+    return sections;
+}
+
+function formatMarkdown(text) {
+    if (!text) return '';
+
+    // Simple markdown formatting
+    let formatted = text
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')  // Bold
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')              // Italic
+        .replace(/\n- /g, '\n• ')                          // Bullet points
+        .replace(/\n/g, '<br>')                             // Line breaks
+        .trim();
+
+    return formatted;
+}
+
+function toggleSection(sectionId) {
+    const section = document.getElementById(sectionId);
+    const toggleIcon = document.getElementById(sectionId.replace('-section', '-toggle'));
+
+    if (section.style.display === 'none') {
+        section.style.display = 'block';
+        if (toggleIcon) toggleIcon.style.transform = 'rotate(180deg)';
+    } else {
+        section.style.display = 'none';
+        if (toggleIcon) toggleIcon.style.transform = 'rotate(0deg)';
+    }
+}
+
+function copyToClipboard(elementId) {
+    const element = document.getElementById(elementId);
+    const text = element.textContent;
+
+    navigator.clipboard.writeText(text).then(() => {
+        showNotification('Copied', 'Prompt copied to clipboard', 'success');
+    }).catch(err => {
+        console.error('Failed to copy:', err);
+        showNotification('Error', 'Failed to copy to clipboard', 'error');
+    });
+}
+
+function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+function closeDetailedAnalysis() {
+    const modal = document.getElementById('detailed-analysis-modal');
     modal.classList.remove('active');
 }
 

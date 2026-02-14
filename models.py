@@ -9,6 +9,7 @@ class PortfolioItem(Base):
     symbol = Column(String, index=True)
     quantity = Column(Float)
     avg_price = Column(Float)
+    side = Column(String, default="BUY")  # BUY or SELL
     added_at = Column(DateTime(timezone=True), server_default=func.now())
 
 class WatchlistItem(Base):
@@ -29,3 +30,10 @@ class StockAnalysis(Base):
     reasoning = Column(Text)  # Full AI reasoning
     current_price = Column(Float)
     analyzed_at = Column(DateTime(timezone=True), server_default=func.now())
+    
+    # NEW: Fields for full transparency
+    full_prompt = Column(Text, nullable=True)  # Complete prompt sent to AI
+    raw_response = Column(Text, nullable=True)  # Full AI response
+    model_used = Column(String(50), nullable=True)  # e.g., "sonar-pro"
+    temperature = Column(Float, nullable=True)  # Model temperature setting
+

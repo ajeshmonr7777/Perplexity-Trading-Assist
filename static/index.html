@@ -15,7 +15,7 @@
     <script src="/static/marked.min.js"></script>
 
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="/static/style.css?v=3">
+    <link rel="stylesheet" href="/static/style.css?v=31">
     <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -76,6 +76,7 @@
                                 <thead>
                                     <tr>
                                         <th>Symbol</th>
+                                        <th>Side</th>
                                         <th>Qty</th>
                                         <th>Avg Price</th>
                                         <th>Current</th>
@@ -131,50 +132,29 @@
 
                 <!-- Agent Cards Grid -->
                 <div class="agents-grid">
-                    <!-- Agent 1: Portfolio Analyzer -->
-                    <div class="agent-card glass" onclick="openAgentModal('portfolio-analyzer')">
-                        <div class="agent-card-icon">
-                            <i class="fa-solid fa-robot"></i>
-                        </div>
-                        <h3>Portfolio Analyzer</h3>
-                        <p>Auto-analyze your holdings and get BUY/HOLD/SELL recommendations</p>
-                        <div class="agent-card-features">
-                            <span><i class="fa-solid fa-check"></i> Automated Analysis</span>
-                            <span><i class="fa-solid fa-check"></i> Scheduled Runs</span>
-                            <span><i class="fa-solid fa-check"></i> Risk Assessment</span>
-                        </div>
-                        <div class="agent-card-status">
-                            <span id="scheduler-status-mini" class="status-dot stopped"></span>
-                            <span>Stopped</span>
-                        </div>
-                        <button class="agent-card-btn">
-                            <i class="fa-solid fa-arrow-right"></i> Launch Agent
-                        </button>
-                    </div>
-
-                    <!-- Agent 2: Stock Screener -->
-                    <div class="agent-card glass" onclick="openAgentModal('stock-screener')">
+                    <!-- Agent 1: Market Explorer (formerly Stock Screener) -->
+                    <div class="agent-card glass" onclick="window.location.href='/static/markets.html'">
                         <div class="agent-card-icon screener">
-                            <i class="fa-solid fa-magnifying-glass-chart"></i>
+                            <i class="fa-solid fa-globe"></i>
                         </div>
-                        <h3>Stock Screener</h3>
-                        <p>Get instant AI-powered analysis for any stock symbol</p>
+                        <h3>Market Explorer</h3>
+                        <p>Explore global markets and get AI-powered analysis for stocks, forex, and crypto</p>
                         <div class="agent-card-features">
-                            <span><i class="fa-solid fa-check"></i> Instant Analysis</span>
-                            <span><i class="fa-solid fa-check"></i> Confidence Score</span>
-                            <span><i class="fa-solid fa-check"></i> Technical Data</span>
+                            <span><i class="fa-solid fa-check"></i> US & European Markets</span>
+                            <span><i class="fa-solid fa-check"></i> Forex & Crypto</span>
+                            <span><i class="fa-solid fa-check"></i> Real-time AI Analysis</span>
                         </div>
                         <div class="agent-card-status">
                             <span class="status-dot ready"></span>
                             <span>Ready</span>
                         </div>
                         <button class="agent-card-btn">
-                            <i class="fa-solid fa-arrow-right"></i> Launch Agent
+                            <i class="fa-solid fa-arrow-right"></i> Explore Markets
                         </button>
                     </div>
 
-                    <!-- Agent 3: Query Assistant -->
-                    <div class="agent-card glass" onclick="openAgentModal('query-assistant')">
+                    <!-- Agent 2: Query Assistant -->
+                    <div class="agent-card glass" onclick="window.location.href='/static/chat.html'">
                         <div class="agent-card-icon assistant">
                             <i class="fa-solid fa-comments"></i>
                         </div>
@@ -207,11 +187,18 @@
             <h2>Add to Portfolio</h2>
             <div class="form-group">
                 <label>Symbol</label>
-                <input type="text" id="asset-symbol" placeholder="AAPL">
+                <input type="text" id="asset-symbol" placeholder="e.g. AAPL">
+            </div>
+            <div class="form-group">
+                <label>Side</label>
+                <select id="asset-side">
+                    <option value="BUY">Buy (Long)</option>
+                    <option value="SELL">Sell (Short)</option>
+                </select>
             </div>
             <div class="form-group">
                 <label>Quantity</label>
-                <input type="number" id="asset-qty" placeholder="10">
+                <input type="number" id="asset-qty" step="0.01">
             </div>
             <div class="form-group">
                 <label>Average Price</label>
@@ -364,7 +351,30 @@
         </div>
     </div>
 
-    <script src="/static/script.js?v=3"></script>
+    <!-- Detailed Analysis Modal -->
+    <div id="detailed-analysis-modal" class="agent-modal">
+        <div class="agent-modal-content glass detailed-analysis-content">
+            <div class="agent-modal-header">
+                <div>
+                    <h2><i class="fa-solid fa-microscope"></i> <span id="detailed-symbol">AAPL</span> - Detailed
+                        Analysis</h2>
+                    <p id="detailed-timestamp">Analyzed: --</p>
+                </div>
+                <button class="modal-close-btn" onclick="closeDetailedAnalysis()">
+                    <i class="fa-solid fa-times"></i>
+                </button>
+            </div>
+
+            <div class="agent-modal-body" id="detailed-modal-body">
+                <!-- Content will be dynamically loaded -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Container -->
+    <div id="notification-container" class="notification-container"></div>
+
+    <script src="/static/script.js?v=21"></script>
 </body>
 
 </html>

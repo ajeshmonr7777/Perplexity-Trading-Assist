@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Symbol List - PerplexTrade</title>
+    <link rel="stylesheet" href="style.css?v=9">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body>
+    <div class="container">
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fa-solid fa-chart-line"></i>
+                <span>PerplexTrade</span>
+            </div>
+            <nav>
+                <a href="index.html"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+                <a href="markets.html" class="active"><i class="fa-solid fa-globe"></i> Market Explorer</a>
+                <a href="#"><i class="fa-solid fa-gear"></i> Settings</a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <div class="header">
+                <button class="back-btn" onclick="window.location.href='markets.html'">
+                    <i class="fa-solid fa-arrow-left"></i> Back to Markets
+                </button>
+                <h1 id="market-title">Market Symbols</h1>
+            </div>
+
+            <div class="symbols-grid" id="symbols-grid">
+                <!-- Symbols will be populated by JavaScript -->
+            </div>
+        </main>
+    </div>
+
+    <script src="symbols.js?v=2"></script>
+</body>
+
+</html>

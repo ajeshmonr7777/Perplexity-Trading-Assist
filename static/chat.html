@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chat - PerplexTrade</title>
+    <link rel="stylesheet" href="style.css?v=31">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="/static/marked.min.js"></script>
+    <style>
+        /* Chat specific styles */
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 40px);
+            /* Adjust for padding */
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .chat-history {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            scroll-behavior: smooth;
+        }
+
+        .chat-input-area {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 1.5rem;
+            border-top: 1px solid var(--glass-border);
+            border-radius: 12px 12px 0 0;
+        }
+
+        .chat-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .context-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            border: 1px solid transparent;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .context-toggle.active {
+            background: rgba(16, 185, 129, 0.2);
+            border-color: var(--success);
+            color: var(--success);
+        }
+
+        .youtube-input-wrapper {
+            display: none;
+            /* Hidden by default */
+            flex: 1;
+            position: relative;
+        }
+
+        .youtube-input-wrapper.visible {
+            display: flex;
+            animation: fadeIn 0.3s;
+        }
+
+        .youtube-input {
+            width: 100%;
+            padding: 0.5rem 2rem 0.5rem 1rem;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 0.9rem;
+        }
+
+        .youtube-input:focus {
+            border-color: var(--accent-primary);
+            outline: none;
+        }
+
+        .youtube-clear {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: var(--text-secondary);
+        }
+
+        .message {
+            max-width: 85%;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            line-height: 1.6;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .message.user {
+            align-self: flex-end;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: white;
+            border-bottom-right-radius: 2px;
+        }
+
+        .message.system {
+            align-self: flex-start;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            color: var(--text-primary);
+            border-bottom-left-radius: 2px;
+        }
+
+        /* Input specific adjustments */
+        .chat-textarea {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 1rem;
+            color: white;
+            font-family: inherit;
+            resize: none;
+            min-height: 60px;
+            max-height: 200px;
+        }
+
+        .chat-textarea:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+        }
+
+        .video-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: rgba(239, 68, 68, 0.2);
+            color: #f87171;
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Sidebar (Simplified) -->
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fa-solid fa-chart-line"></i>
+                <span>PerplexTrade</span>
+            </div>
+            <nav>
+                <a href="index.html"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+                <a href="markets.html"><i class="fa-solid fa-globe"></i> Market Explorer</a>
+                <a href="chat.html" class="active"><i class="fa-solid fa-robot"></i> AI Assistant</a>
+            </nav>
+        </aside>
+
+        <main class="main-content" style="padding-bottom: 0;">
+            <div class="chat-container">
+                <div class="header" style="margin-bottom: 1rem;">
+                    <h1><i class="fa-solid fa-comments"></i> Market Assistant</h1>
+                </div>
+
+                <!-- Chat History -->
+                <div id="chat-history" class="chat-history">
+                    <div class="message system">
+                        <p>Hello! I'm your AI trading assistant.</p>
+                        <p>You can ask me about market trends, specific stocks, or your portfolio.</p>
+                        <p>You can also specificy <strong>YouTube Videos</strong> for me to analyze!</p>
+                    </div>
+                </div>
+
+                <!-- Input Area -->
+                <div class="chat-input-area glass">
+                    <!-- Controls -->
+                    <div class="chat-controls">
+                        <!-- Holdings Toggle -->
+                        <div class="context-toggle" id="holdings-toggle" onclick="toggleHoldings()">
+                            <i class="fa-solid fa-briefcase"></i>
+                            <span>Include Holdings</span>
+                        </div>
+
+                        <!-- YouTube Button -->
+                        <div class="context-toggle" id="youtube-btn" onclick="toggleYoutubeInput()">
+                            <i class="fa-brands fa-youtube" style="color: #ef4444;"></i>
+                            <span>Add Video</span>
+                        </div>
+
+                        <!-- YouTube Input (Hidden) -->
+                        <div class="youtube-input-wrapper" id="youtube-wrapper">
+                            <input type="text" id="youtube-url" class="youtube-input"
+                                placeholder="Paste YouTube URL...">
+                            <i class="fa-solid fa-times youtube-clear" onclick="clearYoutube()"></i>
+                        </div>
+                    </div>
+
+                    <!-- Text Input -->
+                    <div class="input-group" style="margin-bottom: 0;">
+                        <textarea id="chat-input" class="chat-textarea" placeholder="Ask anything about the markets..."
+                            rows="1" onkeydown="handleEnter(event)"></textarea>
+                        <button class="analyze-btn" onclick="sendChatMessage()">
+                            <i class="fa-solid fa-paper-plane"></i> Send
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="chat.js"></script>
+</body>
+
+</html>

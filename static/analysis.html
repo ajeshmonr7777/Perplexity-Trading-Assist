@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analysis - PerplexTrade</title>
+    <link rel="stylesheet" href="style.css?v=31">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body>
+    <div class="container">
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fa-solid fa-chart-line"></i>
+                <span>PerplexTrade</span>
+            </div>
+            <nav>
+                <a href="index.html"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+                <a href="markets.html" class="active"><i class="fa-solid fa-globe"></i> Market Explorer</a>
+                <a href="#"><i class="fa-solid fa-gear"></i> Settings</a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <div class="header">
+                <button class="back-btn" id="back-btn">
+                    <i class="fa-solid fa-arrow-left"></i> Back to Symbols
+                </button>
+                <h1 id="symbol-title">Symbol Analysis</h1>
+                <button class="analyze-btn" id="analyze-btn" onclick="runAnalysis()">
+                    <i class="fa-solid fa-play"></i> Run Analysis
+                </button>
+            </div>
+
+            <div id="loading-state" class="loading-state">
+                <i class="fa-solid fa-spinner fa-spin"></i>
+                <p>Analyzing symbol with AI...</p>
+            </div>
+
+            <div id="analysis-content" class="analysis-page-content" style="display: none;">
+                <!-- Analysis sections -->
+                <div class="analysis-section glass">
+                    <h2><i class="fa-solid fa-bullseye"></i> AI Decision</h2>
+                    <div class="decision-display">
+                        <div class="decision-badge-large" id="decision-badge">ANALYZING...</div>
+                        <div class="confidence-meter">
+                            <span>Confidence</span>
+                            <div class="confidence-bar">
+                                <div class="confidence-fill" id="confidence-fill" style="width: 0%"></div>
+                            </div>
+                            <span id="confidence-text">0%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="analysis-section glass">
+                    <h2><i class="fa-solid fa-newspaper"></i> Market Sentiment & News</h2>
+                    <div id="sentiment-content" class="sentiment-content"></div>
+                </div>
+
+                <div class="analysis-section glass">
+                    <h2><i class="fa-solid fa-calendar-days"></i> Upcoming Catalysts</h2>
+                    <div id="catalysts-content" class="catalysts-content"></div>
+                </div>
+
+                <div class="analysis-section glass">
+                    <h2><i class="fa-solid fa-chart-line"></i> Technical Outlook</h2>
+                    <div id="technical-content" class="technical-content"></div>
+                </div>
+
+                <div class="analysis-section glass">
+                    <h2><i class="fa-solid fa-brain"></i> Detailed Reasoning</h2>
+                    <div id="reasoning-content" class="reasoning-content"></div>
+                </div>
+
+                <div class="analysis-section glass">
+                    <h2><i class="fa-solid fa-code"></i> Full AI Response</h2>
+                    <pre id="raw-response" class="raw-response"></pre>
+                </div>
+
+                <div class="analysis-section glass">
+                    <h2><i class="fa-solid fa-terminal"></i> Prompt Sent to AI</h2>
+                    <pre id="prompt-content" class="raw-response"></pre>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="analysis.js?v=50"></script>
+</body>
+
+</html>

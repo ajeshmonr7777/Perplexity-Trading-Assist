@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from pydantic import BaseModel
@@ -13,6 +13,7 @@ class PortfolioItemBase(BaseModel):
     symbol: str
     quantity: float
     avg_price: float
+    side: Optional[str] = "BUY"
 
 class PortfolioItemCreate(PortfolioItemBase):
     pass
@@ -23,9 +24,15 @@ class PortfolioItemResponse(PortfolioItemBase):
     pnl: Optional[float] = 0.0
     pnl_percent: Optional[float] = 0.0
     market_value: Optional[float] = 0.0
+    side: Optional[str] = "BUY"
     
     class Config:
         from_attributes = True
+
+class QueryAssistantRequest(BaseModel):
+    query: str
+    include_holdings: bool = True
+    youtube_url: Optional[str] = None
 
 class WatchlistItemBase(BaseModel):
     symbol: str
@@ -61,6 +68,7 @@ def get_portfolio(db: Session = Depends(get_db)):
             symbol=item.symbol,
             quantity=item.quantity,
             avg_price=item.avg_price,
+            side=item.side or "BUY",
             current_price=current_price,
             market_value=market_value,
             pnl=pnl,
@@ -71,7 +79,12 @@ def get_portfolio(db: Session = Depends(get_db)):
 
 @router.post("/portfolio", response_model=PortfolioItemResponse)
 def add_portfolio_item(item: PortfolioItemCreate, db: Session = Depends(get_db)):
-    db_item = models.PortfolioItem(symbol=item.symbol.upper(), quantity=item.quantity, avg_price=item.avg_price)
+    db_item = models.PortfolioItem(
+        symbol=item.symbol.upper(),
+        quantity=item.quantity,
+        avg_price=item.avg_price,
+        side=item.side.upper() if item.side else "BUY"
+    )
     db.add(db_item)
     db.commit()
     db.refresh(db_item)
@@ -81,6 +94,7 @@ def add_portfolio_item(item: PortfolioItemCreate, db: Session = Depends(get_db))
         symbol=db_item.symbol,
         quantity=db_item.quantity,
         avg_price=db_item.avg_price,
+        side=db_item.side,
         current_price=0.0
     )
 
@@ -274,39 +288,61 @@ async def run_stock_screener(request: dict):
     return result
 
 @router.post("/ai/query-assistant")
-async def run_query_assistant(request: dict, db: Session = Depends(get_db)):
+async def run_query_assistant(request: QueryAssistantRequest, db: Session = Depends(get_db)):
     """
-    Agent 3: Free-form query assistant
-    Auto-fetches data for mentioned symbols
-    
-    Request body: {"query": "Should I buy AAPL?"}
+    Agent 3: Free-form query assistant with optional YouTube context and Portfolio awareness
     """
     from backend.services import ai_agents
+    from backend.services.youtube_service import youtube_service
     
-    query = request.get("query", "")
-    if not query:
+    if not request.query:
         return {"error": "Query is required"}
     
-    # Get portfolio context
-    items = db.query(models.PortfolioItem).all()
-    portfolio_context = []
+    # Get Youtube context if URL provided
+    youtube_context = None
+    if request.youtube_url:
+        youtube_context = youtube_service.get_transcript(request.youtube_url)
     
-    for item in items:
-        current_price = data_service.get_current_price(item.symbol)
-        market_value = current_price * item.quantity
-        cost_basis = item.avg_price * item.quantity
-        pnl = market_value - cost_basis
-        
-        portfolio_context.append({
-            'symbol': item.symbol,
-            'quantity': item.quantity,
-            'avg_price': item.avg_price,
-            'current_price': current_price,
-            'pnl': pnl
-        })
+    # Get portfolio context if requested
+    portfolio_context = None
+    if request.include_holdings:
+        items = db.query(models.PortfolioItem).all()
+        portfolio_context = []
+        for item in items:
+            current_price = data_service.get_current_price(item.symbol)
+            market_value = current_price * item.quantity
+            cost_basis = item.avg_price * item.quantity
+            pnl = market_value - cost_basis
+            
+            portfolio_context.append({
+                'symbol': item.symbol,
+                'quantity': item.quantity,
+                'avg_price': item.avg_price,
+                'current_price': current_price,
+                'pnl': pnl
+            })
     
-    result = await ai_agents.query_assistant(query, portfolio_context)
+    result = await ai_agents.query_assistant(request.query, portfolio_context=portfolio_context, youtube_context=youtube_context)
     return result
+
+# ============================================================================
+# SYMBOL SEARCH & MARKET DATA
+# ============================================================================
+
+@router.get("/symbols/markets")
+def get_available_markets():
+    from backend.services.symbol_service import symbol_service
+    return symbol_service.get_markets_list()
+
+@router.get("/symbols/search")
+def search_symbols(q: str, market: str = None):
+    from backend.services.symbol_service import symbol_service
+    return symbol_service.search(q, market_code=market)
+
+@router.get("/symbols/all")
+def get_all_symbols(market: str = None):
+    from backend.services.symbol_service import symbol_service
+    return symbol_service.get_all_symbols(market_code=market)
 
 # ============================================================================
 # SCHEDULER ENDPOINTS
@@ -373,7 +409,7 @@ async def run_analysis_now(db: Session = Depends(get_db)):
 # ============================================================================
 
 @router.post("/analysis/symbol/{symbol}")
-async def analyze_single_symbol(symbol: str, db: Session = Depends(get_db)):
+async def analyze_single_symbol(symbol: str, mode: str = Query("standard"), db: Session = Depends(get_db)):
     """
     Analyze a single symbol and save to database
     Returns: Decision, Confidence, Reasoning
@@ -384,8 +420,19 @@ async def analyze_single_symbol(symbol: str, db: Session = Depends(get_db)):
     # Get current price
     current_price = data_service.get_current_price(symbol)
     
+    # Check for holding context ONLY if mode is 'holding'
+    holding_context = None
+    if mode == "holding":
+        portfolio_item = db.query(models.PortfolioItem).filter(models.PortfolioItem.symbol == symbol.upper()).first()
+        if portfolio_item:
+            holding_context = {
+                "side": portfolio_item.side,
+                "quantity": portfolio_item.quantity,
+                "avg_price": portfolio_item.avg_price
+            }
+    
     # Run AI analysis
-    result = await ai_agents.analyze_symbol(symbol)
+    result = await ai_agents.analyze_symbol(symbol, holding_context=holding_context)
     
     if "error" in result:
         return {"error": result["error"]}
@@ -396,7 +443,11 @@ async def analyze_single_symbol(symbol: str, db: Session = Depends(get_db)):
         decision=result.get("recommendation", "HOLD").upper(),
         confidence=result.get("confidence", 50),
         reasoning=result.get("reasoning", ""),
-        current_price=current_price
+        current_price=current_price,
+        full_prompt=result.get("full_prompt"),
+        raw_response=result.get("raw_response"),
+        model_used=result.get("model_used"),
+        temperature=result.get("temperature")
     )
     
     db.add(analysis)
@@ -405,11 +456,16 @@ async def analyze_single_symbol(symbol: str, db: Session = Depends(get_db)):
     
     return {
         "symbol": symbol,
+        "recommendation": analysis.decision,
         "decision": analysis.decision,
         "confidence": analysis.confidence,
         "reasoning": analysis.reasoning,
         "current_price": analysis.current_price,
-        "analyzed_at": analysis.analyzed_at.isoformat()
+        "analyzed_at": analysis.analyzed_at.isoformat(),
+        "full_prompt": analysis.full_prompt,
+        "raw_response": analysis.raw_response,
+        "model_used": analysis.model_used,
+        "temperature": analysis.temperature
     }
 
 @router.get("/analysis/symbol/{symbol}/history")
@@ -496,7 +552,12 @@ async def analyze_all_portfolio_symbols(db: Session = Depends(get_db)):
             current_price = data_service.get_current_price(item.symbol)
             
             # Run AI analysis
-            ai_result = await ai_agents.analyze_symbol(item.symbol)
+            holding_context = {
+                "side": item.side,
+                "quantity": item.quantity,
+                "avg_price": item.avg_price
+            }
+            ai_result = await ai_agents.analyze_symbol(item.symbol, holding_context=holding_context)
             
             if "error" not in ai_result:
                 # Save to database
@@ -505,7 +566,11 @@ async def analyze_all_portfolio_symbols(db: Session = Depends(get_db)):
                     decision=ai_result.get("recommendation", "HOLD").upper(),
                     confidence=ai_result.get("confidence", 50),
                     reasoning=ai_result.get("reasoning", ""),
-                    current_price=current_price
+                    current_price=current_price,
+                    full_prompt=ai_result.get("full_prompt"),
+                    raw_response=ai_result.get("raw_response"),
+                    model_used=ai_result.get("model_used"),
+                    temperature=ai_result.get("temperature")
                 )
                 
                 db.add(analysis)
@@ -534,4 +599,32 @@ async def analyze_all_portfolio_symbols(db: Session = Depends(get_db)):
         "analyzed": len([r for r in results if r.get("status") == "success"]),
         "failed": len([r for r in results if r.get("status") == "failed"]),
         "results": results
+    }
+
+@router.get("/analysis/symbol/{symbol}/detailed")
+def get_detailed_analysis(symbol: str, db: Session = Depends(get_db)):
+    """
+    Get the most recent detailed analysis for a symbol
+    Including full prompt, raw response, and all metadata
+    """
+    analysis = db.query(models.StockAnalysis)\
+        .filter(models.StockAnalysis.symbol == symbol.upper())\
+        .order_by(models.StockAnalysis.analyzed_at.desc())\
+        .first()
+    
+    if not analysis:
+        return {"error": f"No analysis found for {symbol}"}
+    
+    return {
+        "id": analysis.id,
+        "symbol": analysis.symbol,
+        "analyzed_at": analysis.analyzed_at.isoformat(),
+        "decision": analysis.decision,
+        "confidence": analysis.confidence,
+        "reasoning": analysis.reasoning,
+        "current_price": analysis.current_price,
+        "full_prompt": analysis.full_prompt,
+        "raw_response": analysis.raw_response,
+        "model_used": analysis.model_used,
+        "temperature": analysis.temperature
     }

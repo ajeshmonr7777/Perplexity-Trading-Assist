@@ -16,13 +16,19 @@ def get_stock_info(symbol: str) -> dict:
     try:
         ticker = yf.Ticker(symbol)
         info = ticker.info
+        
+        # Handle cases where currentPrice is None (common for indices)
+        price = info.get("currentPrice")
+        if price is None:
+            price = get_current_price(symbol)
+            
         return {
             "symbol": symbol,
-            "name": info.get("shortName", symbol),
-            "current_price": info.get("currentPrice", get_current_price(symbol)),
-            "sector": info.get("sector", "N/A"),
-            "pe_ratio": info.get("trailingPE", None),
-            "market_cap": info.get("marketCap", None)
+            "name": info.get("shortName", info.get("longName", symbol)),
+            "current_price": price,
+            "sector": info.get("sector", "Index" if "^" in symbol else "N/A"),
+            "pe_ratio": info.get("trailingPE") or 0.0,
+            "market_cap": info.get("marketCap") or 0
         }
     except Exception as e:
         print(f"Error fetching info for {symbol}: {e}")

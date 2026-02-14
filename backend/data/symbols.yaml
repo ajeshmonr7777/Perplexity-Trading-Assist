@@ -1,0 +1,255 @@
+markets:
+  - name: "Global Indices"
+    code: "indices"
+    categories: ["Indices", "Global"]
+    symbols:
+      - { symbol: "^GSPC", name: "S&P 500 Index" }
+      - { symbol: "^DJI", name: "Dow Jones Industrial Average" }
+      - { symbol: "^IXIC", name: "NASDAQ Composite" }
+      - { symbol: "^RUT", name: "Russell 2000" }
+      - { symbol: "^FTSE", name: "FTSE 100 (UK)" }
+      - { symbol: "^GDAXI", name: "DAX Performance Index (Germany)" }
+      - { symbol: "^N225", name: "Nikkei 225 (Japan)" }
+      - { symbol: "^HSI", name: "Hang Seng Index (Hong Kong)" }
+      - { symbol: "^NSEI", name: "Nifty 50 (India)" }
+      - { symbol: "^BSESN", name: "S&P BSE SENSEX (India)" }
+      - { symbol: "^FCHI", name: "CAC 40 (France)" }
+      - { symbol: "^STOXX50E", name: "EURO STOXX 50" }
+      - { symbol: "^AORD", name: "All Ordinaries (Australia)" }
+      - { symbol: "^KS11", name: "KOSPI Composite (Korea)" }
+      - { symbol: "^TWII", name: "TSEC weighted index (Taiwan)" }
+
+  - name: "US Market"
+    code: "us"
+    categories: ["Stocks", "US"]
+    symbols:
+      - { symbol: "AAPL", name: "Apple Inc." }
+      - { symbol: "MSFT", name: "Microsoft Corporation" }
+      - { symbol: "GOOGL", name: "Alphabet Inc." }
+      - { symbol: "AMZN", name: "Amazon.com Inc." }
+      - { symbol: "NVDA", name: "NVIDIA Corporation" }
+      - { symbol: "TSLA", name: "Tesla Inc." }
+      - { symbol: "META", name: "Meta Platforms Inc." }
+      - { symbol: "BRK.B", name: "Berkshire Hathaway Inc." }
+      - { symbol: "TSM", name: "Taiwan Semiconductor" }
+      - { symbol: "UNH", name: "UnitedHealth Group" }
+      - { symbol: "JNJ", name: "Johnson & Johnson" }
+      - { symbol: "JPM", name: "JPMorgan Chase & Co." }
+      - { symbol: "V", name: "Visa Inc." }
+      - { symbol: "PG", name: "Procter & Gamble" }
+      - { symbol: "MA", name: "Mastercard Incorporated" }
+      - { symbol: "HD", name: "The Home Depot" }
+      - { symbol: "CVX", name: "Chevron Corporation" }
+      - { symbol: "ABBV", name: "AbbVie Inc." }
+      - { symbol: "LLY", name: "Eli Lilly and Company" }
+      - { symbol: "MRK", name: "Merck & Co." }
+      - { symbol: "KO", name: "Coca-Cola Company" }
+      - { symbol: "PEP", name: "PepsiCo Inc." }
+      - { symbol: "AVGO", name: "Broadcom Inc." }
+      - { symbol: "COST", name: "Costco Wholesale" }
+      - { symbol: "PFE", name: "Pfizer Inc." }
+      - { symbol: "WMT", name: "Walmart Inc." }
+      - { symbol: "BAC", name: "Bank of America" }
+      - { symbol: "XOM", name: "Exxon Mobil" }
+      - { symbol: "DIS", name: "Walt Disney Company" }
+      - { symbol: "CSCO", name: "Cisco Systems" }
+      - { symbol: "VZ", name: "Verizon Communications" }
+      - { symbol: "CRM", name: "Salesforce Inc." }
+      - { symbol: "ADBE", name: "Adobe Inc." }
+      - { symbol: "NFLX", name: "Netflix Inc." }
+      - { symbol: "AMD", name: "Advanced Micro Devices" }
+      - { symbol: "INTC", name: "Intel Corporation" }
+      - { symbol: "T", name: "AT&T Inc." }
+      - { symbol: "NKE", name: "NIKE Inc." }
+      - { symbol: "QCOM", name: "Qualcomm Inc." }
+      - { symbol: "IBM", name: "IBM Corporation" }
+      - { symbol: "PM", name: "Philip Morris" }
+      - { symbol: "ORCL", name: "Oracle Corporation" }
+      - { symbol: "GS", name: "Goldman Sachs" }
+      - { symbol: "MS", name: "Morgan Stanley" }
+      - { symbol: "CAT", name: "Caterpillar Inc." }
+      - { symbol: "BA", name: "Boeing Company" }
+      - { symbol: "MCD", name: "McDonald's Corp" }
+      - { symbol: "HON", name: "Honeywell International" }
+      - { symbol: "GE", name: "General Electric" }
+      - { symbol: "MMM", name: "3M Company" }
+
+  - name: "ETFs"
+    code: "etfs"
+    categories: ["ETFs", "Funds"]
+    symbols:
+      - { symbol: "SPY", name: "SPDR S&P 500 ETF Trust" }
+      - { symbol: "IVV", name: "iShares Core S&P 500 ETF" }
+      - { symbol: "VOO", name: "Vanguard S&P 500 ETF" }
+      - { symbol: "QQQ", name: "Invesco QQQ Trust" }
+      - { symbol: "IWM", name: "iShares Russell 2000 ETF" }
+      - { symbol: "DIA", name: "SPDR Dow Jones ETF" }
+      - { symbol: "VTI", name: "Vanguard Total Stock Market" }
+      - { symbol: "VTV", name: "Vanguard Value ETF" }
+      - { symbol: "VUG", name: "Vanguard Growth ETF" }
+      - { symbol: "VEA", name: "Vanguard FTSE Developed Markets" }
+      - { symbol: "IEFA", name: "iShares Core MSCI EAFE" }
+      - { symbol: "BND", name: "Vanguard Total Bond Market" }
+      - { symbol: "AGG", name: "iShares Core U.S. Aggregate Bond" }
+      - { symbol: "GLD", name: "SPDR Gold Shares" }
+      - { symbol: "IAU", name: "iShares Gold Trust" }
+      - { symbol: "SLV", name: "iShares Silver Trust" }
+      - { symbol: "GDX", name: "VanEck Gold Miners ETF" }
+      - { symbol: "ARKK", name: "ARK Innovation ETF" }
+      - { symbol: "SMH", name: "VanEck Semiconductor ETF" }
+      - { symbol: "XLE", name: "Energy Select Sector SPDR" }
+      - { symbol: "XLF", name: "Financial Select Sector SPDR" }
+      - { symbol: "XLK", name: "Technology Select Sector SPDR" }
+      - { symbol: "XLV", name: "Health Care Select Sector SPDR" }
+      - { symbol: "XLI", name: "Industrial Select Sector SPDR" }
+      - { symbol: "XLP", name: "Consumer Staples Select Sector" }
+      - { symbol: "XLY", name: "Consumer Discretionary Select" }
+      - { symbol: "XLU", name: "Utilities Select Sector SPDR" }
+      - { symbol: "IYR", name: "iShares U.S. Real Estate" }
+      - { symbol: "EEM", name: "iShares MSCI Emerging Markets" }
+      - { symbol: "EWJ", name: "iShares MSCI Japan" }
+      - { symbol: "FXI", name: "iShares China Large-Cap" }
+
+  - name: "Small & Mid Cap"
+    code: "smallcap"
+    categories: ["Growth", "SmallCap"]
+    symbols:
+      - { symbol: "PLTR", name: "Palantir Technologies" }
+      - { symbol: "SOFI", name: "SoFi Technologies" }
+      - { symbol: "RIVN", name: "Rivian Automotive" }
+      - { symbol: "LCID", name: "Lucid Group" }
+      - { symbol: "DKNG", name: "DraftKings Inc." }
+      - { symbol: "HOOD", name: "Robinhood Markets" }
+      - { symbol: "PATH", name: "UiPath Inc." }
+      - { symbol: "AFRM", name: "Affirm Holdings" }
+      - { symbol: "UPST", name: "Upstart Holdings" }
+      - { symbol: "COIN", name: "Coinbase Global" }
+      - { symbol: "NET", name: "Cloudflare Inc." }
+      - { symbol: "DDOG", name: "Datadog Inc." }
+      - { symbol: "ZS", name: "Zscaler Inc." }
+      - { symbol: "CRWD", name: "CrowdStrike Holdings" }
+      - { symbol: "SNOW", name: "Snowflake Inc." }
+      - { symbol: "U", name: "Unity Software" }
+      - { symbol: "RBLX", name: "Roblox Corporation" }
+      - { symbol: "OPEN", name: "Opendoor Technologies" }
+      - { symbol: "KVUE", name: "Kenvue Inc." }
+      - { symbol: "CART", name: "Instacart (Maplebear)" }
+      - { symbol: "ARM", name: "Arm Holdings" }
+
+  - name: "European Market"
+    code: "europe"
+    categories: ["Stocks", "Europe"]
+    symbols:
+      - { symbol: "ASML.AS", name: "ASML Holding" }
+      - { symbol: "MC.PA", name: "LVMH" }
+      - { symbol: "SAP.DE", name: "SAP SE" }
+      - { symbol: "SIE.DE", name: "Siemens AG" }
+      - { symbol: "NVO", name: "Novo Nordisk" }
+      - { symbol: "OR.PA", name: "L'Oréal" }
+      - { symbol: "SAN.PA", name: "Sanofi" }
+      - { symbol: "AIR.PA", name: "Airbus SE" }
+      - { symbol: "ALV.DE", name: "Allianz SE" }
+      - { symbol: "DTE.DE", name: "Deutsche Telekom" }
+      - { symbol: "IBE.MC", name: "Iberdrola" }
+      - { symbol: "EL.PA", name: "EssilorLuxottica" }
+      - { symbol: "RMS.PA", name: "Hermès International" }
+      - { symbol: "CS.PA", name: "AXA" }
+      - { symbol: "BNP.PA", name: "BNP Paribas" }
+      - { symbol: "RACE.MI", name: "Ferrari" }
+      - { symbol: "STLAM.MI", name: "Stellantis" }
+      - { symbol: "ENEL.MI", name: "Enel" }
+
+  - name: "India Market"
+    code: "in"
+    categories: ["Stocks", "India"]
+    symbols:
+      - { symbol: "RELIANCE.NS", name: "Reliance Industries" }
+      - { symbol: "TCS.NS", name: "Tata Consultancy Services" }
+      - { symbol: "HDFCBANK.NS", name: "HDFC Bank" }
+      - { symbol: "INFY.NS", name: "Infosys" }
+      - { symbol: "ICICIBANK.NS", name: "ICICI Bank" }
+      - { symbol: "HINDUNILVR.NS", name: "Hindustan Unilever" }
+      - { symbol: "SBIN.NS", name: "State Bank of India" }
+      - { symbol: "BHARTIARTL.NS", name: "Bharti Airtel" }
+      - { symbol: "ITC.NS", name: "ITC Ltd" }
+      - { symbol: "KOTAKBANK.NS", name: "Kotak Mahindra Bank" }
+      - { symbol: "LT.NS", name: "Larsen & Toubro" }
+      - { symbol: "AXISBANK.NS", name: "Axis Bank" }
+      - { symbol: "BAJFINANCE.NS", name: "Bajaj Finance" }
+      - { symbol: "MARUTI.NS", name: "Maruti Suzuki" }
+      - { symbol: "ASIANPAINT.NS", name: "Asian Paints" }
+      - { symbol: "TITAN.NS", name: "Titan Company" }
+      - { symbol: "ULTRACEMCO.NS", name: "UltraTech Cement" }
+      - { symbol: "SUNPHARMA.NS", name: "Sun Pharma" }
+      - { symbol: "ADANIENT.NS", name: "Adani Enterprises" }
+      - { symbol: "TATASTEEL.NS", name: "Tata Steel" }
+      - { symbol: "NTPC.NS", name: "NTPC Limited" }
+      - { symbol: "POWERGRID.NS", name: "Power Grid Corp" }
+      - { symbol: "M&M.NS", name: "Mahindra & Mahindra" }
+      - { symbol: "TATAMOTORS.NS", name: "Tata Motors" }
+      - { symbol: "HCLTECH.NS", name: "HCL Technologies" }
+      - { symbol: "WIPRO.NS", name: "Wipro Limited" }
+      - { symbol: "ONGC.NS", name: "ONGC" }
+      - { symbol: "COALINDIA.NS", name: "Coal India" }
+      - { symbol: "INDUSINDBK.NS", name: "IndusInd Bank" }
+      - { symbol: "BAJAJFINSV.NS", name: "Bajaj Finserv" }
+
+  - name: "UK Market"
+    code: "uk"
+    categories: ["Stocks", "UK"]
+    symbols:
+      - { symbol: "SHEL.L", name: "Shell plc" }
+      - { symbol: "AZN.L", name: "AstraZeneca" }
+      - { symbol: "HSBA.L", name: "HSBC Holdings" }
+      - { symbol: "ULVR.L", name: "Unilever" }
+      - { symbol: "BP.L", name: "BP plc" }
+      - { symbol: "DGE.L", name: "Diageo" }
+      - { symbol: "GSK.L", name: "GSK plc" }
+      - { symbol: "RIO.L", name: "Rio Tinto" }
+      - { symbol: "BATS.L", name: "British American Tobacco" }
+      - { symbol: "GLEN.L", name: "Glencore" }
+      - { symbol: "VOD.L", name: "Vodafone Group" }
+      - { symbol: "LLOY.L", name: "Lloyds Banking Group" }
+      - { symbol: "BARC.L", name: "Barclays" }
+      - { symbol: "PRU.L", name: "Prudential" }
+      - { symbol: "NG.L", name: "National Grid" }
+      - { symbol: "RR.L", name: "Rolls-Royce Holdings" }
+
+  - name: "Crypto Market"
+    code: "crypto"
+    categories: ["Crypto", "Digital Assets"]
+    symbols:
+      - { symbol: "BTC-USD", name: "Bitcoin" }
+      - { symbol: "ETH-USD", name: "Ethereum" }
+      - { symbol: "BNB-USD", name: "Binance Coin" }
+      - { symbol: "XRP-USD", name: "XRP" }
+      - { symbol: "ADA-USD", name: "Cardano" }
+      - { symbol: "SOL-USD", name: "Solana" }
+      - { symbol: "DOGE-USD", name: "Dogecoin" }
+      - { symbol: "DOT-USD", name: "Polkadot" }
+      - { symbol: "TRX-USD", name: "TRON" }
+      - { symbol: "MATIC-USD", name: "Polygon" }
+      - { symbol: "LTC-USD", name: "Litecoin" }
+      - { symbol: "SHIB-USD", name: "Shiba Inu" }
+      - { symbol: "AVAX-USD", name: "Avalanche" }
+      - { symbol: "LINK-USD", name: "Chainlink" }
+      - { symbol: "XLM-USD", name: "Stellar" }
+      - { symbol: "UNI7083-USD", name: "Uniswap" }
+      - { symbol: "ATOM-USD", name: "Cosmos" }
+
+  - name: "Forex Market"
+    code: "forex"
+    categories: ["Currencies", "FX"]
+    symbols:
+      - { symbol: "EURUSD=X", name: "EUR/USD" }
+      - { symbol: "JPY=X", name: "USD/JPY" }
+      - { symbol: "GBPUSD=X", name: "GBP/USD" }
+      - { symbol: "AUDUSD=X", name: "AUD/USD" }
+      - { symbol: "NZDUSD=X", name: "NZD/USD" }
+      - { symbol: "EURJPY=X", name: "EUR/JPY" }
+      - { symbol: "GBPJPY=X", name: "GBP/JPY" }
+      - { symbol: "EURGBP=X", name: "EUR/GBP" }
+      - { symbol: "EURCHF=X", name: "EUR/CHF" }
+      - { symbol: "USDCAD=X", name: "USD/CAD" }
+      - { symbol: "USDCNY=X", name: "USD/CNY" }
+      - { symbol: "USDINR=X", name: "USD/INR" }

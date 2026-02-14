@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Market Explorer - PerplexTrade</title>
+    <link rel="stylesheet" href="style.css?v=9">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body>
+    <div class="container">
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fa-solid fa-chart-line"></i>
+                <span>PerplexTrade</span>
+            </div>
+            <nav>
+                <a href="index.html"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+                <a href="#" class="active"><i class="fa-solid fa-globe"></i> Market Explorer</a>
+                <a href="#"><i class="fa-solid fa-gear"></i> Settings</a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <div class="header">
+                <h1>Market Explorer</h1>
+                <span class="badge">Powered by Perplexity AI</span>
+            </div>
+
+            <p class="markets-subtitle">Explore top stocks across global markets or analyze any symbol</p>
+
+            <!-- Custom Symbol Search -->
+            <!-- Custom Symbol Search -->
+            <div class="glass"
+                style="margin-bottom: 3rem; padding: 1rem; display: flex; gap: 1rem; align-items: center; position: relative; z-index: 100;">
+                <i class="fa-solid fa-magnifying-glass" style="color: var(--text-secondary);"></i>
+                <input type="text" id="custom-symbol" placeholder="Search companies or symbols..."
+                    style="flex:1; border:none; background:transparent; color:white; font-size:1.1rem; outline:none; font-family: inherit;">
+
+                <button class="btn-primary" onclick="searchCustomSymbol()" style="padding: 0.5rem 1.5rem;">
+                    Analyze
+                </button>
+
+                <!-- Search Results Dropdown -->
+                <div id="search-results" class="search-results-container"></div>
+            </div>
+
+            <script src="search.js"></script>
+            <script>
+                function searchCustomSymbol() {
+                    const symbol = document.getElementById('custom-symbol').value.toUpperCase().trim();
+                    if (symbol) {
+                        window.location.href = `analysis.html?symbol=${symbol}&market=custom`;
+                    }
+                }
+                document.getElementById('custom-symbol').addEventListener('keypress', function (e) {
+                    if (e.key === 'Enter') searchCustomSymbol();
+                });
+            </script>
+
+            <div class="markets-grid">
+                <!-- US Market -->
+                <div class="market-card glass" onclick="window.location.href='symbols.html?market=us'">
+                    <div class="market-icon us">
+                        <i class="fa-solid fa-flag-usa"></i>
+                    </div>
+                    <h3>US Market</h3>
+                    <p>S&P 500 Top Performers</p>
+                    <div class="market-stats">
+                        <div class="stat">
+                            <span class="stat-label">Symbols</span>
+                            <span class="stat-value">10</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">Market</span>
+                            <span class="stat-value">NYSE/NASDAQ</span>
+                        </div>
+                    </div>
+                    <button class="market-btn">
+                        <i class="fa-solid fa-arrow-right"></i> Explore
+                    </button>
+                </div>
+
+                <!-- European Market -->
+                <div class="market-card glass" onclick="window.location.href='symbols.html?market=europe'">
+                    <div class="market-icon europe">
+                        <i class="fa-solid fa-earth-europe"></i>
+                    </div>
+                    <h3>European Market</h3>
+                    <p>STOXX 50 Leaders</p>
+                    <div class="market-stats">
+                        <div class="stat">
+                            <span class="stat-label">Symbols</span>
+                            <span class="stat-value">10</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">Market</span>
+                            <span class="stat-value">Euronext</span>
+                        </div>
+                    </div>
+                    <button class="market-btn">
+                        <i class="fa-solid fa-arrow-right"></i> Explore
+                    </button>
+                </div>
+
+                <!-- Forex Market -->
+                <div class="market-card glass" onclick="window.location.href='symbols.html?market=forex'">
+                    <div class="market-icon forex">
+                        <i class="fa-solid fa-dollar-sign"></i>
+                    </div>
+                    <h3>Forex Market</h3>
+                    <p>Major Currency Pairs</p>
+                    <div class="market-stats">
+                        <div class="stat">
+                            <span class="stat-label">Symbols</span>
+                            <span class="stat-value">10</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">Market</span>
+                            <span class="stat-value">FX</span>
+                        </div>
+                    </div>
+                    <button class="market-btn">
+                        <i class="fa-solid fa-arrow-right"></i> Explore
+                    </button>
+                </div>
+
+                <!-- Crypto Market -->
+                <!-- Crypto Market -->
+                <div class="market-card glass" onclick="window.location.href='symbols.html?market=crypto'">
+                    <div class="market-icon crypto">
+                        <i class="fa-brands fa-bitcoin"></i>
+                    </div>
+                    <h3>Crypto Market</h3>
+                    <p>Bitcoin & Top Altcoins</p>
+                    <div class="market-stats">
+                        <div class="stat">
+                            <span class="stat-label">Symbols</span>
+                            <span class="stat-value">10</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">Market</span>
+                            <span class="stat-value">Crypto</span>
+                        </div>
+                    </div>
+                    <button class="market-btn">
+                        <i class="fa-solid fa-arrow-right"></i> Explore
+                    </button>
+                </div>
+
+                <!-- Global Indices -->
+                <div class="market-card glass" onclick="window.location.href='symbols.html?market=indices'">
+                    <div class="market-icon"
+                        style="background: linear-gradient(135deg, #6366f1, #4f46e5); box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);">
+                        <i class="fa-solid fa-chart-line"></i>
+                    </div>
+                    <h3>Global Indices</h3>
+                    <p>Major World Markets</p>
+                    <div class="market-stats">
+                        <div class="stat">
+                            <span class="stat-label">Symbols</span>
+                            <span class="stat-value">8</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">Market</span>
+                            <span class="stat-value">Global</span>
+                        </div>
+                    </div>
+                    <button class="market-btn">
+                        <i class="fa-solid fa-arrow-right"></i> Explore
+                    </button>
+                </div>
+
+                <!-- Top ETFs -->
+                <div class="market-card glass" onclick="window.location.href='symbols.html?market=etfs'">
+                    <div class="market-icon"
+                        style="background: linear-gradient(135deg, #ec4899, #db2777); box-shadow: 0 8px 20px rgba(236, 72, 153, 0.4);">
+                        <i class="fa-solid fa-layer-group"></i>
+                    </div>
+                    <h3>Top ETFs</h3>
+                    <p>Diversified Funds</p>
+                    <div class="market-stats">
+                        <div class="stat">
+                            <span class="stat-label">Symbols</span>
+                            <span class="stat-value">8</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">Market</span>
+                            <span class="stat-value">Mixed</span>
+                        </div>
+                    </div>
+                    <button class="market-btn">
+                        <i class="fa-solid fa-arrow-right"></i> Explore
+                    </button>
+                </div>
+
+                <!-- Small Caps -->
+                <div class="market-card glass" onclick="window.location.href='symbols.html?market=smallcap'">
+                    <div class="market-icon"
+                        style="background: linear-gradient(135deg, #14b8a6, #0d9488); box-shadow: 0 8px 20px rgba(20, 184, 166, 0.4);">
+                        <i class="fa-solid fa-seedling"></i>
+                    </div>
+                    <h3>Small & Mid Cap</h3>
+                    <p>High Growth Potential</p>
+                    <div class="market-stats">
+                        <div class="stat">
+                            <span class="stat-label">Symbols</span>
+                            <span class="stat-value">9</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">Market</span>
+                            <span class="stat-value">Growth</span>
+                        </div>
+                    </div>
+                    <button class="market-btn">
+                        <i class="fa-solid fa-arrow-right"></i> Explore
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>
