@@ -93,6 +93,18 @@ async def analyze_query(query: str, portfolio_context: list = None, include_macr
     async with httpx.AsyncClient() as client:
         try:
             response = await client.post(url, headers=headers, json=payload, timeout=60.0)
+            
+            if response.status_code == 401:
+                error_data = response.json()
+                error_msg = error_data.get("error", {}).get("message", "Unauthorized")
+                if "quota" in error_msg.lower():
+                    return {
+                        "choices": [{"message": {"content": f"❌ **Perplexity API Quota Exceeded**: {error_msg}\n\nPlease add credits at https://www.perplexity.ai/settings/api"}}]
+                    }
+                return {
+                    "choices": [{"message": {"content": f"❌ **Perplexity API Unauthorized**: {error_msg}\n\nPlease check if your API key is correct in the .env file."}}]
+                }
+                
             response.raise_for_status()
             return response.json()
         except Exception as e:

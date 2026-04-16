@@ -8,3 +8,6 @@ pydantic
 python-multipart
 python-dotenv
 numpy
+PyYAML
+yt-dlp
+requests

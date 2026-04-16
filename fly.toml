@@ -1,0 +1,20 @@
+app = 'perplexity-trading'
+primary_region = 'bom'
+
+[build]
+
+[env]
+  DATABASE_URL = "sqlite:////data/trading_system.db"
+  PORT = "8001"
+
+[http_service]
+  internal_port = 8001
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ['app']
+
+[mounts]
+  source = "db_data"
+  destination = "/data"
